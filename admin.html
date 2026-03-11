@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IPTV Master - Admin</title>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest" defer></script>
     
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./src/style.css">
 </head>
 <body class="admin-body">
 
-    <!-- Login Section -->
     <div id="loginSection" class="modal" style="background: var(--bg-color);">
         <div class="modal-content glass" style="padding: 2rem;">
             <h2 class="gold-text mb-2 text-center">Admin Login</h2>
@@ -31,10 +28,7 @@
         </div>
     </div>
 
-    <!-- Admin Layout -->
     <div id="adminLayout" class="admin-layout hidden">
-        
-        <!-- Sidebar -->
         <aside class="admin-sidebar glass" id="adminSidebar">
             <div class="sidebar-header">
                 <h2 class="gold-text"><i data-lucide="shield"></i> Admin</h2>
@@ -47,11 +41,10 @@
                 <a href="#" class="nav-link" data-target="slider"><i data-lucide="image"></i> Slider</a>
                 <a href="#" class="nav-link" data-target="notifications"><i data-lucide="bell"></i> Notifications</a>
                 <a href="#" class="nav-link" data-target="ads"><i data-lucide="dollar-sign"></i> Ads</a>
-                <a href="index.html" class="nav-link"><i data-lucide="external-link"></i> View App</a>
+                <a href="./index.html" class="nav-link"><i data-lucide="external-link"></i> View App</a>
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <main class="admin-main">
             <header class="admin-header glass">
                 <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn"><i data-lucide="menu"></i></button>
@@ -59,8 +52,6 @@
             </header>
 
             <div class="admin-content">
-                
-                <!-- Dashboard View -->
                 <div id="dashboardView" class="admin-section active">
                     <div class="stats-grid">
                         <div class="stat-card glass">
@@ -87,7 +78,6 @@
                     </div>
                 </div>
 
-                <!-- Channels View -->
                 <div id="channelsView" class="admin-section">
                     <div class="section-header">
                         <h2>Manage Channels</h2>
@@ -104,14 +94,11 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="channelsTableBody">
-                                <!-- Injected via JS -->
-                            </tbody>
+                            <tbody id="channelsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Categories View -->
                 <div id="categoriesView" class="admin-section">
                     <div class="section-header">
                         <h2>Manage Categories</h2>
@@ -126,25 +113,19 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="categoriesTableBody">
-                                <!-- Injected via JS -->
-                            </tbody>
+                            <tbody id="categoriesTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Slider View -->
                 <div id="sliderView" class="admin-section">
                     <div class="section-header">
                         <h2>Manage Slider</h2>
                         <button id="addSlideBtn" class="btn-gold"><i data-lucide="plus"></i> Add Slide</button>
                     </div>
-                    <div class="slider-grid" id="adminSliderGrid">
-                        <!-- Injected via JS -->
-                    </div>
+                    <div class="slider-grid" id="adminSliderGrid"></div>
                 </div>
 
-                <!-- Notifications View -->
                 <div id="notificationsView" class="admin-section">
                     <div class="section-header">
                         <h2>Push Notifications</h2>
@@ -161,12 +142,9 @@
                         <button id="sendNotifBtn" class="btn-gold w-full"><i data-lucide="send"></i> Send Notification</button>
                     </div>
                     <h3 class="mb-2">Recent Notifications</h3>
-                    <div id="adminNotifsList" class="glass" style="border-radius: 16px; overflow: hidden;">
-                        <!-- Injected via JS -->
-                    </div>
+                    <div id="adminNotifsList" class="glass" style="border-radius: 16px; overflow: hidden;"></div>
                 </div>
 
-                <!-- Ads View -->
                 <div id="adsView" class="admin-section">
                     <div class="section-header">
                         <h2>Ads Management</h2>
@@ -182,20 +160,14 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="adsTableBody">
-                                <!-- Injected via JS -->
-                            </tbody>
+                            <tbody id="adsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
 
-    <!-- Modals -->
-    
-    <!-- Channel Modal -->
     <div id="channelModal" class="modal hidden">
         <div class="modal-content glass">
             <div class="modal-header">
@@ -235,7 +207,6 @@
         </div>
     </div>
 
-    <!-- Category Modal -->
     <div id="categoryModal" class="modal hidden">
         <div class="modal-content glass">
             <div class="modal-header">
@@ -260,7 +231,6 @@
         </div>
     </div>
 
-    <!-- Slide Modal -->
     <div id="slideModal" class="modal hidden">
         <div class="modal-content glass">
             <div class="modal-header">
@@ -289,7 +259,6 @@
         </div>
     </div>
 
-    <!-- Ad Modal -->
     <div id="adModal" class="modal hidden">
         <div class="modal-content glass">
             <div class="modal-header">
@@ -321,7 +290,6 @@
         </div>
     </div>
 
-    <!-- Admin Logic -->
-    <script type="module" src="admin.js" defer></script>
+    <script type="module" src="./src/admin.js" defer></script>
 </body>
 </html>

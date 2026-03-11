@@ -1,12 +1,13 @@
-const CACHE_NAME = 'iptv-master-v3';
+const CACHE_NAME = 'iptv-master-v5';
 const ASSETS_TO_CACHE = [
-    'index.html',
-    'admin.html',
-    'style.css',
-    'app.js',
-    'admin.js',
-    'firebase-config.js',
-    'manifest.json'
+    './',
+    './index.html',
+    './admin.html',
+    './src/style.css',
+    './src/app.js',
+    './src/admin.js',
+    './src/firebase-config.js',
+    './manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
