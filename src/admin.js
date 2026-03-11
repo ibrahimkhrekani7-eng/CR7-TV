@@ -82,30 +82,30 @@ function initAdmin() {
         adminState.channels = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderAdminChannels();
         updateDashboardStats();
-    }, (error) => console.error("Error fetching admin channels:", error));
+    });
 
     onSnapshot(collection(db, 'categories'), (snapshot) => {
         adminState.categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderAdminCategories();
         updateDashboardStats();
         updateCategorySelects();
-    }, (error) => console.error("Error fetching admin categories:", error));
+    });
 
     onSnapshot(collection(db, 'slider'), (snapshot) => {
         adminState.slides = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderAdminSlides();
-    }, (error) => console.error("Error fetching admin slider:", error));
+    });
 
     onSnapshot(collection(db, 'notifications'), (snapshot) => {
         adminState.notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.timestamp - a.timestamp);
         renderAdminNotifs();
         updateDashboardStats();
-    }, (error) => console.error("Error fetching admin notifications:", error));
+    });
 
     onSnapshot(collection(db, 'ads'), (snapshot) => {
         adminState.ads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderAdminAds();
-    }, (error) => console.error("Error fetching admin ads:", error));
+    });
 }
 
 function setupAdminNav() {
@@ -491,4 +491,16 @@ function editSlide(id) {
     document.getElementById('slideModal').classList.remove('hidden');
 }
 
-async function delete
+async function deleteSlide(id) {
+    if (confirm('Delete this slide?')) {
+        try {
+            await deleteDoc(doc(db, 'slider', id));
+        } catch (error) {
+            alert('Error deleting slide: ' + error.message);
+        }
+    }
+}
+
+function renderAdminNotifs() {
+    const list = document.getElementById('adminNotifsList');
+    if(!list) retu

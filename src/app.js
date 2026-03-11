@@ -108,17 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('iptv_favs', JSON.stringify(state.favorites));
         const activeTab = document.querySelector('.bottom-nav .active');
         if(activeTab) renderChannels(activeTab.getAttribute('data-tab') === 'favorites');
-    }, (error) => console.error("Error fetching channels:", error));
+    });
 
     onSnapshot(collection(db, 'categories'), (snapshot) => {
         state.categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderCategories();
-    }, (error) => console.error("Error fetching categories:", error));
+    });
 
     onSnapshot(collection(db, 'slider'), (snapshot) => {
         state.slides = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderSlider();
-    }, (error) => console.error("Error fetching slider:", error));
+    });
 
     onSnapshot(collection(db, 'notifications'), (snapshot) => {
         state.notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.timestamp - a.timestamp);
@@ -126,13 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!document.getElementById('notificationsPanel').classList.contains('hidden')) {
             renderNotifications();
         }
-    }, (error) => console.error("Error fetching notifications:", error));
+    });
 
     onSnapshot(collection(db, 'ads'), (snapshot) => {
         state.ads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const activeTab = document.querySelector('.bottom-nav .active');
         if(activeTab) renderChannels(activeTab.getAttribute('data-tab') === 'favorites');
-    }, (error) => console.error("Error fetching ads:", error));
+    });
 
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Reg Failed:', err));
@@ -217,12 +217,6 @@ function renderCategories() {
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
             state.currentCategory = e.currentTarget.getAttribute('data-category');
-            
-            const homeTab = document.querySelector('[data-tab="home"]');
-            if(homeTab) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                homeTab.classList.add('active');
-            }
             renderChannels();
         });
     });
@@ -550,4 +544,21 @@ function setupEventListeners() {
 
         notifBtn.addEventListener('click', () => {
             notifPanel.classList.toggle('hidden');
-            settingsPanel.classList.add('hidd
+            settingsPanel.classList.add('hidden');
+            renderNotifications();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!settingsBtn.contains(e.target) && !settingsPanel.contains(e.target)) {
+                settingsPanel.classList.add('hidden');
+            }
+            if (!notifBtn.contains(e.target) && !notifPanel.contains(e.target)) {
+                notifPanel.classList.add('hidden');
+            }
+        });
+    }
+
+    const themeToggle = document.getElementById('themeToggle');
+    if(themeToggle) themeToggle.addEventListener('click', toggleTheme);
+    
+    cons
