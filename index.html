@@ -4,23 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IPTV Master</title>
-    
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#0f172a">
     <link rel="apple-touch-icon" href="./icon-192x192.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest" defer></script>
-    
     <link rel="stylesheet" href="./src/style.css">
 </head>
 <body data-theme="dark">
-
     <nav class="navbar glass">
-        <div class="nav-left">
-            <i data-lucide="tv" class="app-icon"></i>
-        </div>
+        <div class="nav-left"><i data-lucide="tv" class="app-icon"></i></div>
         <div class="nav-center">
             <div class="search-bar">
                 <i data-lucide="search"></i>
@@ -32,9 +26,7 @@
                 <i data-lucide="bell"></i>
                 <span class="badge" id="notifBadge" style="display: none;">0</span>
             </div>
-            <div class="settings-menu-btn" id="settingsBtn">
-                <i data-lucide="settings"></i>
-            </div>
+            <div class="settings-menu-btn" id="settingsBtn"><i data-lucide="settings"></i></div>
         </div>
     </nav>
 
@@ -57,10 +49,7 @@
                 <i data-lucide="moon"></i>
             </button>
         </div>
-        <div class="setting-group">
-            <label data-i18n="adminInfo">Developer Info</label>
-            <div class="dev-info"></div>
-        </div>
+        <div class="setting-group"><label data-i18n="adminInfo">Developer Info</label><div class="dev-info"></div></div>
         <div class="setting-group" style="margin-top: 2rem;">
             <a href="./admin.html" class="btn-gold w-full" style="justify-content: center; text-decoration: none;">
                 <i data-lucide="shield"></i> <span data-i18n="adminPanel">Admin Panel</span>
@@ -74,28 +63,15 @@
     </div>
 
     <main id="app" class="main-content">
-        <div class="slider-container glass">
-            <div class="slider" id="slider"></div>
-        </div>
-        <div class="categories-wrapper">
-            <div class="categories-scroll" id="categoriesList"></div>
-        </div>
+        <div class="slider-container glass"><div class="slider" id="slider"></div></div>
+        <div class="categories-wrapper"><div class="categories-scroll" id="categoriesList"></div></div>
         <div class="channels-grid" id="channelsGrid"></div>
     </main>
 
     <nav class="bottom-nav">
-        <div class="nav-item active" data-tab="home">
-            <i data-lucide="home"></i>
-            <span data-i18n="home">Home</span>
-        </div>
-        <div class="nav-item" data-tab="favorites">
-            <i data-lucide="heart"></i>
-            <span data-i18n="favorites">Favorites</span>
-        </div>
-        <div class="nav-item" data-tab="tvmode">
-            <i data-lucide="monitor-play"></i>
-            <span data-i18n="tvMode">TV Mode</span>
-        </div>
+        <div class="nav-item active" data-tab="home"><i data-lucide="home"></i><span data-i18n="home">Home</span></div>
+        <div class="nav-item" data-tab="favorites"><i data-lucide="heart"></i><span data-i18n="favorites">Favorites</span></div>
+        <div class="nav-item" data-tab="tvmode"><i data-lucide="monitor-play"></i><span data-i18n="tvMode">TV Mode</span></div>
     </nav>
 
     <div id="tvModeModal" class="tv-mode-modal hidden">
@@ -111,7 +87,6 @@
             </div>
         </div>
     </div>
-
     <script type="module" src="./src/app.js" defer></script>
 </body>
 </html>
