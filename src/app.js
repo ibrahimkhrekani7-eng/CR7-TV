@@ -1,7 +1,6 @@
 import { db } from './firebase-config.js';
 import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// Multi-language support
 const translations = {
     en: {
         searchPlaceholder: "Search channels...",
@@ -71,7 +70,7 @@ const translations = {
 };
 
 const developerInfo = {
-    name: "CR7 TV Developer",
+    name: "IPTV Master Admin",
     socials: [
         { icon: "twitter", link: "https://twitter.com" },
         { icon: "github", link: "https://github.com" },
@@ -79,52 +78,47 @@ const developerInfo = {
     ]
 };
 
-// Application State
 let state = {
     channels: [],
     categories: [],
     slides: [],
     notifications: [],
     ads: [],
-    favorites: JSON.parse(localStorage.getItem('cr7_favs')) || [],
-    deletedNotifs: JSON.parse(localStorage.getItem('cr7_deleted_notifs')) || [],
-    theme: localStorage.getItem('cr7_theme') || 'dark',
-    language: localStorage.getItem('cr7_lang') || 'en',
+    favorites: JSON.parse(localStorage.getItem('iptv_favs')) || [],
+    deletedNotifs: JSON.parse(localStorage.getItem('iptv_deleted_notifs')) || [],
+    theme: localStorage.getItem('iptv_theme') || 'dark',
+    language: localStorage.getItem('iptv_lang') || 'en',
     currentCategory: 'all',
     searchQuery: ''
 };
 
-// Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     initTheme();
     initLanguage();
     setupEventListeners();
     
-    // Real-time Firebase Listeners
     onSnapshot(collection(db, 'channels'), (snapshot) => {
         state.channels = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        // Sync default favorites from DB
         state.channels.forEach(c => {
             if (c.isFavorite && !state.favorites.includes(c.id)) {
                 state.favorites.push(c.id);
             }
         });
-        localStorage.setItem('cr7_favs', JSON.stringify(state.favorites));
-        
+        localStorage.setItem('iptv_favs', JSON.stringify(state.favorites));
         const activeTab = document.querySelector('.bottom-nav .active');
         if(activeTab) renderChannels(activeTab.getAttribute('data-tab') === 'favorites');
-    });
+    }, (error) => console.error("Error fetching channels:", error));
 
     onSnapshot(collection(db, 'categories'), (snapshot) => {
         state.categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderCategories();
-    });
+    }, (error) => console.error("Error fetching categories:", error));
 
     onSnapshot(collection(db, 'slider'), (snapshot) => {
         state.slides = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderSlider();
-    });
+    }, (error) => console.error("Error fetching slider:", error));
 
     onSnapshot(collection(db, 'notifications'), (snapshot) => {
         state.notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.timestamp - a.timestamp);
@@ -132,17 +126,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!document.getElementById('notificationsPanel').classList.contains('hidden')) {
             renderNotifications();
         }
-    });
+    }, (error) => console.error("Error fetching notifications:", error));
 
     onSnapshot(collection(db, 'ads'), (snapshot) => {
         state.ads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const activeTab = document.querySelector('.bottom-nav .active');
         if(activeTab) renderChannels(activeTab.getAttribute('data-tab') === 'favorites');
-    });
+    }, (error) => console.error("Error fetching ads:", error));
 
-    // PWA Service Worker Registration
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Registration Failed:', err));
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Reg Failed:', err));
     }
     
     renderDeveloperInfo();
@@ -156,8 +149,8 @@ function renderDeveloperInfo() {
             socialsHtml += `<a href="${social.link}" target="_blank" style="color: inherit;"><i data-lucide="${social.icon}"></i></a>`;
         });
         devInfoContainer.innerHTML = `
-            <p style="font-weight: 600;">${developerInfo.name}</p>
-            <div class="social-links" style="display: flex; gap: 15px; margin-top: 12px; justify-content: center;">
+            <p>${developerInfo.name}</p>
+            <div class="social-links" style="display: flex; gap: 10px; margin-top: 10px; justify-content: center;">
                 ${socialsHtml}
             </div>
         `;
@@ -171,14 +164,18 @@ function initTheme() {
 
 function toggleTheme() {
     state.theme = state.theme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('cr7_theme', state.theme);
+    localStorage.setItem('iptv_theme', state.theme);
     initTheme();
 }
 
 function initLanguage() {
     document.getElementById('languageSelect').value = state.language;
     applyTranslations();
-    document.body.setAttribute('dir', ['ar', 'ku', 'fa'].includes(state.language) ? 'rtl' : 'ltr');
+    if (['ar', 'ku', 'fa'].includes(state.language)) {
+        document.body.setAttribute('dir', 'rtl');
+    } else {
+        document.body.setAttribute('dir', 'ltr');
+    }
 }
 
 function applyTranslations() {
@@ -197,15 +194,14 @@ function applyTranslations() {
 
 function changeLanguage(lang) {
     state.language = lang;
-    localStorage.setItem('cr7_lang', lang);
+    localStorage.setItem('iptv_lang', lang);
     initLanguage();
 }
 
 function renderCategories() {
     const container = document.getElementById('categoriesList');
     if(!container) return;
-    
-    container.innerHTML = `<button class="category-btn ${state.currentCategory === 'all' ? 'active' : ''}" data-category="all">${translations[state.language].allChannels}</button>`;
+    container.innerHTML = `<button class="category-btn ${state.currentCategory === 'all' ? 'active' : ''}" data-category="all" data-i18n="allChannels">${translations[state.language].allChannels}</button>`;
     
     state.categories.forEach(cat => {
         const btn = document.createElement('button');
@@ -222,9 +218,8 @@ function renderCategories() {
             e.currentTarget.classList.add('active');
             state.currentCategory = e.currentTarget.getAttribute('data-category');
             
-            // Switch to Home tab if not already there
             const homeTab = document.querySelector('[data-tab="home"]');
-            if(homeTab && !homeTab.classList.contains('active')) {
+            if(homeTab) {
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 homeTab.classList.add('active');
             }
@@ -237,7 +232,6 @@ function renderSlider() {
     const slider = document.getElementById('slider');
     if(!slider) return;
     slider.innerHTML = '';
-    
     state.slides.forEach(slide => {
         const div = document.createElement('div');
         div.className = 'slide';
@@ -250,8 +244,7 @@ function renderSlider() {
         slider.appendChild(div);
     });
 
-    // Auto-slide logic
-    if (!window.sliderInterval && state.slides.length > 1) {
+    if (!window.sliderInterval) {
         let currentSlide = 0;
         window.sliderInterval = setInterval(() => {
             if (state.slides.length === 0) return;
@@ -282,13 +275,12 @@ function renderChannels(filterFavs = false) {
     let adIndex = 0;
 
     filtered.forEach((channel, index) => {
-        // Dynamic Ad Injection every 8 items
         if (index > 0 && index % 8 === 0 && activeAds.length > 0) {
             const ad = activeAds[adIndex % activeAds.length];
             const adBox = document.createElement('div');
-            adBox.className = 'ad-box glass';
+            adBox.className = 'ad-box';
             if (ad.content.startsWith('http')) {
-                adBox.innerHTML = `<a href="${ad.link || '#'}" target="_blank"><img src="${ad.content}" alt="Advertisement"></a>`;
+                adBox.innerHTML = `<a href="${ad.link || '#'}" target="_blank"><img src="${ad.content}" alt="Ad"></a>`;
             } else {
                 adBox.innerHTML = ad.content;
             }
@@ -316,7 +308,6 @@ function renderChannels(filterFavs = false) {
     });
     lucide.createIcons();
 
-    // Re-bind favorite buttons
     document.querySelectorAll('.fav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.currentTarget.getAttribute('data-id');
@@ -333,7 +324,7 @@ function renderNotifications() {
     const visibleNotifs = state.notifications.filter(n => !state.deletedNotifs.includes(n.id));
     
     if (visibleNotifs.length === 0) {
-        list.innerHTML = `<p class="text-muted text-center" style="padding: 20px;">No new notifications</p>`;
+        list.innerHTML = '<p class="text-muted text-center">No notifications</p>';
         updateNotifBadge();
         return;
     }
@@ -342,8 +333,8 @@ function renderNotifications() {
         const div = document.createElement('div');
         div.className = 'notif-item';
         div.innerHTML = `
-            <h4 style="color: var(--gold);">${n.title}</h4>
-            <p class="text-muted" style="font-size: 0.85rem; margin-top: 5px; line-height: 1.4;">${n.message}</p>
+            <h4>${n.title}</h4>
+            <p class="text-muted" style="font-size: 0.85rem; margin-top: 5px;">${n.message}</p>
             <div class="notif-time">${new Date(n.timestamp).toLocaleString()}</div>
             <button class="notif-delete-btn" data-id="${n.id}"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
         `;
@@ -355,7 +346,7 @@ function renderNotifications() {
         btn.addEventListener('click', (e) => {
             const id = e.currentTarget.getAttribute('data-id');
             state.deletedNotifs.push(id);
-            localStorage.setItem('cr7_deleted_notifs', JSON.stringify(state.deletedNotifs));
+            localStorage.setItem('iptv_deleted_notifs', JSON.stringify(state.deletedNotifs));
             renderNotifications();
             updateNotifBadge();
         });
@@ -376,7 +367,7 @@ function toggleFavorite(id) {
     } else {
         state.favorites.push(id);
     }
-    localStorage.setItem('cr7_favs', JSON.stringify(state.favorites));
+    localStorage.setItem('iptv_favs', JSON.stringify(state.favorites));
     
     const activeTab = document.querySelector('.bottom-nav .active');
     if(activeTab) {
@@ -384,7 +375,6 @@ function toggleFavorite(id) {
     }
 }
 
-// Player Variables
 let hls = null;
 let tvTimeout;
 let currentChannelIndex = 0;
@@ -399,14 +389,12 @@ function openPlayer(channel) {
     
     modal.classList.remove('hidden');
     
-    // Request Fullscreen
     if (container.requestFullscreen) {
-        container.requestFullscreen().catch(err => console.log("Fullscreen Error:", err));
+        container.requestFullscreen().catch(err => console.log(err));
     }
     
     playStream(channel.streamUrl, video);
     
-    // Prepare TV Mode Channel List
     tvChannels = state.currentCategory === 'all' ? state.channels : state.channels.filter(c => c.category === state.currentCategory);
     currentChannelIndex = tvChannels.findIndex(c => c.id === channel.id);
     if(currentChannelIndex === -1) currentChannelIndex = 0;
@@ -423,12 +411,12 @@ function playStream(url, video) {
         hls.loadSource(url);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
-            video.play().catch(e => console.log("Auto-play blocked"));
+            video.play().catch(e => console.log("Auto-play prevented"));
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = url;
         video.addEventListener('loadedmetadata', function() {
-            video.play().catch(e => console.log("Auto-play blocked"));
+            video.play().catch(e => console.log("Auto-play prevented"));
         });
     }
 }
@@ -446,7 +434,7 @@ function closePlayer() {
         hls = null;
     }
     if (document.fullscreenElement) {
-        document.exitFullscreen().catch(err => console.log("Exit Fullscreen Error:", err));
+        document.exitFullscreen().catch(err => console.log(err));
     }
 }
 
@@ -463,7 +451,6 @@ function showTVUI() {
 function renderTVCategories() {
     const list = document.getElementById('tvCategoriesList');
     if(!list) return;
-    
     list.innerHTML = `<button class="category-btn ${state.currentCategory === 'all' ? 'active' : ''}" data-category="all" style="width:100%; text-align:left;">All Channels</button>`;
     
     state.categories.forEach(cat => {
@@ -519,7 +506,6 @@ function renderTVChannels() {
 }
 
 function setupEventListeners() {
-    // Search
     const searchInput = document.getElementById('searchInput');
     if(searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -529,7 +515,6 @@ function setupEventListeners() {
         });
     }
 
-    // Bottom Navigation
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', (e) => {
             const tab = e.currentTarget.getAttribute('data-tab');
@@ -544,11 +529,14 @@ function setupEventListeners() {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             e.currentTarget.classList.add('active');
             
-            renderChannels(tab === 'favorites');
+            if (tab === 'favorites') {
+                renderChannels(true);
+            } else {
+                renderChannels(false);
+            }
         });
     });
 
-    // Settings & Notifications Panels
     const settingsBtn = document.getElementById('settingsBtn');
     const settingsPanel = document.getElementById('settingsPanel');
     const notifBtn = document.getElementById('notificationBtn');
@@ -556,4 +544,10 @@ function setupEventListeners() {
 
     if(settingsBtn && settingsPanel && notifBtn && notifPanel) {
         settingsBtn.addEventListener('click', () => {
-          
+            settingsPanel.classList.toggle('hidden');
+            notifPanel.classList.add('hidden');
+        });
+
+        notifBtn.addEventListener('click', () => {
+            notifPanel.classList.toggle('hidden');
+            settingsPanel.classList.add('hidden');
